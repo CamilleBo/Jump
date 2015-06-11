@@ -1,0 +1,75 @@
+version 2
+
+
+/* General informations
+root_actuated 0
+external_forces 0*/
+
+
+
+/*         << Root Segment Top Body >>
+    ---------------------------------------
+    Modeled after the "Right Foot Segment"
+    This will define my zero point. */       
+
+
+	segment	SegRA
+        parent SegTA
+        translations xz
+		rotations	y
+		mass	0.70991
+		RT
+			1.00000	0.00000	0.00000	0.000
+			0.00000	1.00000	0.00000	0.000
+			0.00000	0.00000	1.00000	0.000
+			0.00000	0.00000	0.00000	1.0000
+		inertia
+			0.00160	0.00000	0.00000
+			0.00000	0.00178	0.00000
+			0.00000	0.00000	0.00051
+                com	0.00000	0.00000	0.17450-0.06997
+                mesh 	0	0	0.17450
+                mesh 	0	0	0
+                mesh 	0	0	0.17450
+	endsegment
+
+/*        <<  Top Segment Top Body >>
+   -----------------------------------------
+    Modeled after right leg segment from 
+    example2.s2mMod. Has no translational
+    motion.  This segment attaches by a joint
+    to the "Root Segment" */                    
+  
+
+  
+	segment	SegTA
+		rotations	y
+		mass	3.20698
+		RT
+			1.00000	0.00000	0.00000	0.000
+			0.00000	1.00000	0.00000	0.000
+            0.00000	0.00000	1.00000	0.17450
+			0.00000	0.00000	0.00000	1.0000
+		inertia
+			0.03877	0.00000	0.00000
+			0.00000	0.03877	0.00000
+			0.00000	0.00000	0.00408
+		com	0.00000	0.00000	0.39050-0.16793
+		mesh 	0	0	0
+		mesh	0	0	0.39050
+	endsegment
+
+
+    marker MR
+	  parent SegRA
+	  position 0 0 0
+	endmarker
+
+
+    contact CTA
+        parent SegTA
+        position 0 0 0.1745
+        axis xz
+    endcontact
+        
+

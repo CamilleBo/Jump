@@ -1,0 +1,168 @@
+//Attempt to model two bodies that interact
+//Begin with simple 1 joint bodies
+
+/*  
+    Q1 = head A
+    Q2 = Body A
+    Q3 = Head B
+    Q4 = Body B
+*/
+
+/* 
+
+<<      This line is very important, 
+version number changes how things are processed >>  
+
+*/
+
+version 2
+
+
+/* General informations
+root_actuated 0
+external_forces 0*/
+
+
+
+/*         << Root Segment Top Body >>
+    ---------------------------------------
+    Modeled after the "Right Foot Segment"
+    This will define my zero point. */       
+
+
+	segment	SegRA
+        translations xz
+		rotations	y
+		mass	0.70991
+		RT
+			1.00000	0.00000	0.00000	0.000
+			0.00000	1.00000	0.00000	0.000
+			0.00000	0.00000	1.00000	0.000
+			0.00000	0.00000	0.00000	1.0000
+		inertia
+			0.00160	0.00000	0.00000
+			0.00000	0.00178	0.00000
+			0.00000	0.00000	0.00051
+                com	0.00000	0.00000	0.17450-0.06997
+                mesh 	0	0	0.17450
+                mesh 	0	0	0
+                mesh 	0	0	0.17450
+	endsegment
+
+/*        <<  Top Segment Top Body >>
+   -----------------------------------------
+    Modeled after right leg segment from 
+    example2.s2mMod. Has no translational
+    motion.  This segment attaches by a joint
+    to the "Root Segment" */                    
+  
+
+  
+	segment	SegTA
+		parent SegRA
+		rotations	y
+		mass	3.20698
+		RT
+			1.00000	0.00000	0.00000	0.000
+			0.00000	1.00000	0.00000	0.000
+            0.00000	0.00000	1.00000	0.17450
+			0.00000	0.00000	0.00000	1.0000
+		inertia
+			0.03877	0.00000	0.00000
+			0.00000	0.03877	0.00000
+			0.00000	0.00000	0.00408
+		com	0.00000	0.00000	0.39050-0.16793
+		mesh 	0	0	0
+		mesh	0	0	0.39050
+	endsegment
+
+
+/*        << Root Segment Bottom Body >>
+    ---------------------------------------
+    Modeled after the "Right Foot Segment" 
+    but vector must point in the opposite
+    direction, i.e. "down".             
+*/
+
+    segment	SegRB
+            translations xz
+        	rotations	y
+            mass	0.70991
+            RT
+			1.00000	0.00000	0.00000	0.000
+			0.00000	1.00000	0.00000	0.000
+			0.00000	0.00000	1.00000	0.000
+			0.00000	0.00000	0.00000	1.0000
+		inertia
+			0.00160	0.00000	0.00000
+			0.00000	0.00178	0.00000
+			0.00000	0.00000	0.00051
+                com	0.00000	0.00000	0.17450-0.06997
+                mesh 	0	0	0.17450
+                mesh 	0	0	0
+                mesh 	0	0	0.17450
+	endsegment
+
+
+/*        <<  Bottom Segment Bottom Body >>
+   -----------------------------------------
+    Modeled after right leg segment from 
+    example2.s2mMod. Has no translational
+    motion.  This segment attaches by a joint
+    to the "Root Segment".  Again needs to 
+    point in the "Opposite Direction"      
+  
+*/
+  
+	segment	SegTB
+		parent SegRB
+		rotations	y
+		mass	3.20698
+        	RT
+			1.00000	0.00000	0.00000	0.000
+			0.00000	1.00000	0.00000	0.000
+            0.00000	0.00000	1.00000	0.17450
+			0.00000	0.00000	0.00000	1.0000
+		inertia
+			0.03877	0.00000	0.00000
+			0.00000	0.03877	0.00000
+			0.00000	0.00000	0.00408
+		com	0.00000	0.00000	0.39050-0.16793
+		mesh 	0	0	0
+		mesh	0	0	0.39050
+	endsegment
+
+
+
+
+/*          << Define "Markers" >>
+    -----------------------------------------
+    Still not quite sure what these mean,
+*/
+
+
+
+
+    marker MR
+	  parent SegRA
+	  position 0 0 0
+	endmarker
+
+    contact	CRA
+		parent	SegRA
+        position	0.0000	0.000	0.0000
+		axis	xz
+	endcontact
+	
+    marker MRB
+	  parent SegRB
+	  position 0 0 0
+	endmarker
+
+/*
+    contact	CTB
+		parent	SegRB
+         position	0.0000	0.000  0.000
+		axis	xz
+	endcontact
+*/

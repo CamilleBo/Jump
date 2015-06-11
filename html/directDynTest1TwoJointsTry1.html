@@ -1,0 +1,295 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>directDynTest1TwoJoints</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-06-11"><meta name="DC.source" content="directDynTest1TwoJoints.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">dirDynTest1 is an attempt to model an interaction between two bodies:</a></li><li><a href="#2">Loads the proper libraries and functions</a></li><li><a href="#3">Clears all previous models</a></li><li><a href="#4">Defines bodies to be used in dynamic analysis</a></li><li><a href="#5">Draws figure of initial position</a></li><li><a href="#6">Calculates dynamics</a></li><li><a href="#7">Calculates hypotenus of a right trianlge</a></li><li><a href="#8">Forward dynamics for one phase/ one model</a></li><li><a href="#9">Exchanges forces at a contact and calculates forward dynamics of second model</a></li><li><a href="#10">Makes a cute movie of the motion from the results</a></li></ul></div><h2>dirDynTest1 is an attempt to model an interaction between two bodies:<a name="1"></a></h2><pre class="codeinput"><span class="comment">% The first body 'm1' has a contact at the foot and is alowed to fall in</span>
+<span class="comment">% gravity and act as a double pendulum.</span>
+<span class="comment">%</span>
+<span class="comment">% The second body 'm2' has no contact and is influenced by the</span>
+<span class="comment">% gravitational field and the forces of m1.  This is acheived in the</span>
+<span class="comment">% following manner:</span>
+<span class="comment">%</span>
+<span class="comment">% The final state of m1 is recorded and used to calculate the forces BY the</span>
+<span class="comment">% body ON the contact to keep it's foot segment stationary (acting as a</span>
+<span class="comment">% pivot), F..</span>
+
+<span class="comment">% The forces are then applied to a stationary model with the magnitude of</span>
+<span class="comment">% gravitational field set to 0 and the torques on each joint caused by F</span>
+<span class="comment">% are calculated.</span>
+
+<span class="comment">% The above mentioned torques are added to the 'initial condition torques'</span>
+<span class="comment">% and the used in 'forward dynamics' to solve the differential equation at</span>
+<span class="comment">% each DegQdotree of Freedom (DOF).</span>
+
+<span class="comment">% The DOF's are defined at each joint and are:</span>
+<span class="comment">%   &gt;&gt; translations in the x and z directions on the foot</span>
+<span class="comment">%   &gt;&gt; rotations about the y axis             on the foot</span>
+<span class="comment">%                             and             on the 'knee'</span>
+
+<span class="keyword">function</span> directDynTest1
+</pre><h2>Loads the proper libraries and functions<a name="2"></a></h2><pre class="codeinput">run(<span class="string">'./S2M_Lib/loadS2MLib_pwd.m'</span>)
+</pre><h2>Clears all previous models<a name="3"></a></h2><pre class="codeinput">    <span class="keyword">try</span> <span class="comment">%#ok&lt;TRYNC&gt;</span>
+        S2M_rbdl(<span class="string">'delete'</span>, m1);
+        S2M_rbdl(<span class="string">'delete'</span>, m2);
+        S2M_rbdl(<span class="string">'delete'</span>, n);
+    <span class="keyword">end</span>
+    clc; clear; close <span class="string">all</span>;
+</pre><h2>Defines bodies to be used in dynamic analysis<a name="4"></a></h2><pre class="codeinput">    n = S2M_rbdl(<span class="string">'new'</span>, <span class="string">'./twoInteractingBodies.s2mMod'</span>);                   <span class="comment">% One model containing both models.</span>
+    m1 = S2M_rbdl(<span class="string">'new'</span>, <span class="string">'./twoBodiesCont.s2mMod'</span>);                         <span class="comment">% With contact on foot - parent segment foot -(double pendulum) used for "Body One", no forceplates</span>
+    m2 = S2M_rbdl(<span class="string">'new'</span>, <span class="string">'./twoBodiesForces.s2mMod'</span>);                       <span class="comment">% Second Body (free no contacts).</span>
+    mass = S2M_rbdl(<span class="string">'totalMass'</span>, n);                                        <span class="comment">% Caclulates total mass of object for easy estimation of forces (i.e. 9.8 * mass = force of gravity)</span>
+    ndof = S2M_rbdl(<span class="string">'ndof'</span>, n);                                             <span class="comment">% Cacluates number of degrees of freedom, useful if you want intial conditions of zero</span>
+    tau = [0 0 0 0]';                                                       <span class="comment">% defines zero torques used in direct dynamics.</span>
+    xinit = [0; 0; pi/6; 0; 0; 0; 0; 0];                                    <span class="comment">% defines initial state for first body</span>
+</pre><h2>Draws figure of initial position<a name="5"></a></h2><pre>  &lt;&lt; code here is straight forward for those with matlab experience &gt;&gt;</pre><pre class="codeinput">    figure
+    view([0 0])
+    xlim([-1 1]);
+    ylim([-1 1]);
+    zlim([-1 1]);
+    h = S2M_rbdl_ShowModel(m1,xinit(1:end/2));
+    hold <span class="string">on</span>
+    h2 = S2M_rbdl_ShowModel(m2, [0;0;0;0]);
+</pre><img vspace="5" hspace="5" src="directDynTest1TwoJoints_01.png" alt=""> <h2>Calculates dynamics<a name="6"></a></h2><pre class="codeinput">    Xint1 = ode45(@dirDyn, [0 1.38], xinit);                                <span class="comment">% uses forward dynamics to calculate dynamics of first body - second body 'invisible'; does not exist in this step.</span>
+    timeFirst = size(Xint1.y, 2);                                           <span class="comment">% stores total number of time steps used to solve ODE in a useable variable</span>
+    Qm1 = (Xint1.y(1:end/2, timeFirst));                                    <span class="comment">% picks out the final position of the first body.</span>
+    Qdotm1 = (Xint1.y(end/2+1:end, timeFirst));                             <span class="comment">% picks out the final velocity of the first body.</span>
+    xfinal = (Xint1.y(1:end, timeFirst));                                   <span class="comment">% picks out the final state of the first body.</span>
+    Xint2 = ode45(@doubleDyn, [0 0.5], zeros(ndof, 1));                     <span class="comment">% uses forward dynamics to calculate second phase of motion using final state of first phase as initial conditions</span>
+
+
+
+<span class="comment">%  The following will be useful when trying to animate both models at the</span>
+<span class="comment">%  same time so that the timing 'looks right'</span>
+
+    timeSecond = size(Xint2.y, 2);
+    secondHalf = repmat(xfinal, 1, timeSecond);
+    firstHalf = repmat(zeros(ndof/2, 1), 1, timeFirst);
+
+    XintBodyOne = [Xint1.y(1:end/2, :), secondHalf(1:end/2, :)];            <span class="comment">% Position of the first body over the whole motion</span>
+    XintBodyTwo = [firstHalf, Xint2.y(1:end/2, :)];                         <span class="comment">% Position of the second body over the whole motion</span>
+    XintTotalMotion = [XintBodyOne; XintBodyTwo];
+
+<span class="comment">%    Fhypot = pythagorous(F(1), F(2));                                      % calculates total force from components</span>
+</pre><h2>Calculates hypotenus of a right trianlge<a name="7"></a></h2><pre class="codeinput">    <span class="keyword">function</span> hypot = pythagorous(xcomp, zcomp)
+       hypot = sqrt(xcomp^2 + zcomp^2);
+    <span class="keyword">end</span>
+</pre><h2>Forward dynamics for one phase/ one model<a name="8"></a></h2><pre class="codeinput">    <span class="keyword">function</span> dx = dirDyn(t,x)
+
+        Q = x(1:end/2);                                                     <span class="comment">% Stores position values</span>
+        Qdot = x(end/2+1:end);                                              <span class="comment">% Stores velocity values</span>
+        Qddot = S2M_rbdl(<span class="string">'forwardDynamics'</span>, m1, Q, Qdot, tau, true);        <span class="comment">%Calculates accelerations of each DOF using RBDL 'forward dynamics'- Documentation can be found online.</span>
+        dx = [Qdot; Qddot];                                                 <span class="comment">% Returns velocities and accelerations</span>
+                                                                            <span class="comment">% in a format useful for ODE 45</span>
+    <span class="keyword">end</span>
+</pre><h2>Exchanges forces at a contact and calculates forward dynamics of second model<a name="9"></a></h2><pre class="codeinput">    <span class="keyword">function</span> dx2 = doubleDyn(t, x)
+        Q = x(1:end/2);                                                                          <span class="comment">% Stores initial postion</span>
+        Qdot = x(end/2+1:end);                                                                   <span class="comment">% Stores initial velocities</span>
+        [QddotDONOTUSE, F] = S2M_rbdl(<span class="string">'forwardDynamics'</span>, m1, Qm1, Qdotm1, tau, true);            <span class="comment">% Calculates final forces exherted on the contact point by body one using final state of m1</span>
+        S2M_rbdl(<span class="string">'gravity'</span>, m2, [0 0 0]');                                                       <span class="comment">% Sets gravity of m2 to zero</span>
+        taus = S2M_rbdl(<span class="string">'inverseDynamics'</span>, m2, Q, Qdot,zeros(ndof/2, 1), [0; 0; 0; F(1); 0; F(2)]);     <span class="comment">% Calculates impact of forces on a stationary m2 in vaccuum</span>
+        S2M_rbdl(<span class="string">'gravity'</span>, m2, [0 0 -9.81]');                                                   <span class="comment">% Sets gravity of m2 back to -9.81</span>
+        TauProp = tau+taus;                                                                      <span class="comment">% Adds initial value tau to torques created by the forces from m1</span>
+        Qddot2 = S2M_rbdl(<span class="string">'forwardDynamics'</span>, m2, Q, Qdot, TauProp);                              <span class="comment">% Calculates accelerations</span>
+        dx2 = [Qdot; Qddot2];                                                                    <span class="comment">% Returns velocities and accelerations in a format compatible with ODE45</span>
+    <span class="keyword">end</span>
+</pre><h2>Makes a cute movie of the motion from the results<a name="10"></a></h2><pre class="codeinput">    S2M_rbdl_AnimateModel(n, XintTotalMotion);
+    <span class="comment">%S2M_rbdl_AnimateModel(m2, XintBodyTwo);</span>
+</pre><img vspace="5" hspace="5" src="directDynTest1TwoJoints_02.png" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% dirDynTest1 is an attempt to model an interaction between two bodies:
+
+% The first body 'm1' has a contact at the foot and is alowed to fall in
+% gravity and act as a double pendulum.
+% 
+% The second body 'm2' has no contact and is influenced by the
+% gravitational field and the forces of m1.  This is acheived in the
+% following manner:
+% 
+% The final state of m1 is recorded and used to calculate the forces BY the
+% body ON the contact to keep it's foot segment stationary (acting as a
+% pivot), F..
+
+% The forces are then applied to a stationary model with the magnitude of
+% gravitational field set to 0 and the torques on each joint caused by F
+% are calculated.
+
+% The above mentioned torques are added to the 'initial condition torques'
+% and the used in 'forward dynamics' to solve the differential equation at
+% each DegQdotree of Freedom (DOF).
+
+% The DOF's are defined at each joint and are:
+%   >> translations in the x and z directions on the foot
+%   >> rotations about the y axis             on the foot 
+%                             and             on the 'knee'
+
+function directDynTest1
+
+
+%%                  Loads the proper libraries and functions
+
+run('./S2M_Lib/loadS2MLib_pwd.m')
+%%                  Clears all previous models
+    
+    try %#ok<TRYNC>
+        S2M_rbdl('delete', m1);
+        S2M_rbdl('delete', m2);
+        S2M_rbdl('delete', n);
+    end
+    clc; clear; close all;
+
+%%                  Defines bodies to be used in dynamic analysis
+    
+    
+    n = S2M_rbdl('new', './twoInteractingBodies.s2mMod');                   % One model containing both models.
+    m1 = S2M_rbdl('new', './twoBodiesCont.s2mMod');                         % With contact on foot - parent segment foot -(double pendulum) used for "Body One", no forceplates
+    m2 = S2M_rbdl('new', './twoBodiesForces.s2mMod');                       % Second Body (free no contacts).
+    mass = S2M_rbdl('totalMass', n);                                        % Caclulates total mass of object for easy estimation of forces (i.e. 9.8 * mass = force of gravity)
+    ndof = S2M_rbdl('ndof', n);                                             % Cacluates number of degrees of freedom, useful if you want intial conditions of zero
+    tau = [0 0 0 0]';                                                       % defines zero torques used in direct dynamics.
+    xinit = [0; 0; pi/6; 0; 0; 0; 0; 0];                                    % defines initial state for first body
+       
+    
+%%                 Draws figure of initial position
+%    << code here is straight forward for those with matlab experience >> 
+    
+    figure 
+    view([0 0])
+    xlim([-1 1]);
+    ylim([-1 1]);
+    zlim([-1 1]);
+    h = S2M_rbdl_ShowModel(m1,xinit(1:end/2));
+    hold on
+    h2 = S2M_rbdl_ShowModel(m2, [0;0;0;0]);
+    
+%%                 Calculates dynamics
+    
+    Xint1 = ode45(@dirDyn, [0 1.38], xinit);                                % uses forward dynamics to calculate dynamics of first body - second body 'invisible'; does not exist in this step.
+    timeFirst = size(Xint1.y, 2);                                           % stores total number of time steps used to solve ODE in a useable variable
+    Qm1 = (Xint1.y(1:end/2, timeFirst));                                    % picks out the final position of the first body.
+    Qdotm1 = (Xint1.y(end/2+1:end, timeFirst));                             % picks out the final velocity of the first body.
+    xfinal = (Xint1.y(1:end, timeFirst));                                   % picks out the final state of the first body.
+    Xint2 = ode45(@doubleDyn, [0 0.5], zeros(ndof, 1));                     % uses forward dynamics to calculate second phase of motion using final state of first phase as initial conditions
+
+    
+    
+%  The following will be useful when trying to animate both models at the
+%  same time so that the timing 'looks right'
+
+    timeSecond = size(Xint2.y, 2);
+    secondHalf = repmat(xfinal, 1, timeSecond);
+    firstHalf = repmat(zeros(ndof/2, 1), 1, timeFirst);
+
+    XintBodyOne = [Xint1.y(1:end/2, :), secondHalf(1:end/2, :)];            % Position of the first body over the whole motion
+    XintBodyTwo = [firstHalf, Xint2.y(1:end/2, :)];                         % Position of the second body over the whole motion
+    XintTotalMotion = [XintBodyOne; XintBodyTwo];
+    
+%    Fhypot = pythagorous(F(1), F(2));                                      % calculates total force from components
+    
+  
+    %%                Calculates hypotenus of a right trianlge
+    
+    function hypot = pythagorous(xcomp, zcomp)
+       hypot = sqrt(xcomp^2 + zcomp^2);
+    end
+
+   
+    %%                Forward dynamics for one phase/ one model
+
+    function dx = dirDyn(t,x)
+        
+        Q = x(1:end/2);                                                     % Stores position values
+        Qdot = x(end/2+1:end);                                              % Stores velocity values     
+        Qddot = S2M_rbdl('forwardDynamics', m1, Q, Qdot, tau, true);        %Calculates accelerations of each DOF using RBDL 'forward dynamics'- Documentation can be found online.                                                                    
+        dx = [Qdot; Qddot];                                                 % Returns velocities and accelerations 
+                                                                            % in a format useful for ODE 45
+    end
+
+
+    %%                Exchanges forces at a contact and calculates forward dynamics of second model
+
+    function dx2 = doubleDyn(t, x)                                                                              
+        Q = x(1:end/2);                                                                          % Stores initial postion
+        Qdot = x(end/2+1:end);                                                                   % Stores initial velocities
+        [QddotDONOTUSE, F] = S2M_rbdl('forwardDynamics', m1, Qm1, Qdotm1, tau, true);            % Calculates final forces exherted on the contact point by body one using final state of m1
+        S2M_rbdl('gravity', m2, [0 0 0]');                                                       % Sets gravity of m2 to zero
+        taus = S2M_rbdl('inverseDynamics', m2, Q, Qdot,zeros(ndof/2, 1), [0; 0; 0; F(1); 0; F(2)]);     % Calculates impact of forces on a stationary m2 in vaccuum
+        S2M_rbdl('gravity', m2, [0 0 -9.81]');                                                   % Sets gravity of m2 back to -9.81
+        TauProp = tau+taus;                                                                      % Adds initial value tau to torques created by the forces from m1
+        Qddot2 = S2M_rbdl('forwardDynamics', m2, Q, Qdot, TauProp);                              % Calculates accelerations
+        dx2 = [Qdot; Qddot2];                                                                    % Returns velocities and accelerations in a format compatible with ODE45
+    end
+
+   
+   
+    %%                Makes a cute movie of the motion from the results
+    
+    S2M_rbdl_AnimateModel(n, XintTotalMotion);
+    %S2M_rbdl_AnimateModel(m2, XintBodyTwo);
+end
+##### SOURCE END #####
+--></body></html>
